@@ -1,0 +1,36 @@
+<jxb:bindings 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="../xsd/GetGamesListResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetGamesListResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../xsd/GetGameResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetGameResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../xsd/GetArtResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetArtResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../xsd/GetPlatformsListResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetPlatformsListResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../xsd/GetPlatformResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetPlatformResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="../xsd/GetPlatformGamesResponse.xsd">
+        <jxb:bindings node="//xs:element[@name='Data']">
+            <jxb:class name="GetPlatformGamesResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>
