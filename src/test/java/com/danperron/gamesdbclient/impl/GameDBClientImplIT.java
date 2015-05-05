@@ -31,38 +31,23 @@ import com.danperron.gamedbclient.domain.GetPlatformResponse;
 import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
 import com.danperron.gamesdbclient.GamesDBClient;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
  */
-public class GameDBClientImplTest {
+public class GameDBClientImplIT {
     
-    public GameDBClientImplTest() {
+    private ExecutorService executorService;
+    
+    public GameDBClientImplIT() {
+        executorService = Executors.newSingleThreadExecutor();
     }
     
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of searchGames method, of class GameDBClientImpl.
@@ -71,7 +56,7 @@ public class GameDBClientImplTest {
     public void testSearchGames() throws InterruptedException, ExecutionException {
         System.out.println("searchGames");
         String query = "bubblebobble";
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetGamesListResponse> expResult = null;
         Future<GetGamesListResponse> result = instance.searchGames(query, GamesDBClient.Platform.NES);
         GetGamesListResponse gamesListResponse = result.get();
@@ -90,7 +75,7 @@ public class GameDBClientImplTest {
     public void testGetGameById() throws InterruptedException, ExecutionException {
         System.out.println("getGameById");
         Long gameId = 7824l;
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         
         Future<GetGameResponse> result = instance.getGameById(gameId);
         
@@ -108,7 +93,7 @@ public class GameDBClientImplTest {
     public void testGetGameArt() throws InterruptedException, ExecutionException {
         System.out.println("getGameArt");
         Long gameId = 7824l;
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetArtResponse> result = instance.getGameArt(gameId);
         
         GetArtResponse getArtResponse = result.get();
@@ -124,7 +109,7 @@ public class GameDBClientImplTest {
     @org.junit.Test
     public void testGetPlatformsList() throws InterruptedException, ExecutionException {
         System.out.println("getPlatformsList");
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetPlatformsListResponse> result = instance.getPlatformsList();
         
         GetPlatformsListResponse getPlatformsListResponse = result.get();
@@ -150,7 +135,7 @@ public class GameDBClientImplTest {
     public void testGetPlatform() throws InterruptedException, ExecutionException {
         System.out.println("getPlatform");
         Long platformId = 7l;
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetPlatformResponse> result = instance.getPlatform(platformId);
         
         GetPlatformResponse platformResponse = result.get();
@@ -168,7 +153,7 @@ public class GameDBClientImplTest {
     public void testGetPlatformGames() throws InterruptedException, ExecutionException {
         System.out.println("getPlatformGames");
         Long platformId = 7l;
-        GameDBClientImpl instance = new GameDBClientImpl();
+        GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetPlatformGamesResponse> result = instance.getPlatformGames(platformId);
         
         GetPlatformGamesResponse getPlatformGamesResponse = result.get();

@@ -23,6 +23,8 @@
  */
 package com.danperron.gamesdbclient;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,7 +63,10 @@ public class GamesDBClientFactoryTest {
     @Test
     public void testGetClient() {
         System.out.println("getClient");
-        GamesDBClient result = GamesDBClientFactory.getClient();
+        
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        
+        GamesDBClient result = GamesDBClientFactory.getClient(executorService);
         assertTrue(result instanceof GamesDBClient);
     }
     

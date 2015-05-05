@@ -30,24 +30,19 @@ import com.danperron.gamedbclient.domain.GetPlatformGamesResponse;
 import com.danperron.gamedbclient.domain.GetPlatformResponse;
 import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
 import com.danperron.gamesdbclient.GamesDBClient;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.base.Strings;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import javax.management.RuntimeErrorException;
-import javax.xml.bind.JAXBException;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
@@ -61,14 +56,17 @@ import org.apache.http.impl.client.HttpClients;
 public class GameDBClientImpl implements GamesDBClient {
 
     private final Executor executor = Executors.newCachedThreadPool();
+    private final ExecutorService executorService;
     private final CloseableHttpClient httpClient = HttpClients.createDefault();
     private final ObjectMapper objectMapper;
 
-    public GameDBClientImpl() {
-
+    public GameDBClientImpl(ExecutorService executorService) {
         objectMapper = new XmlMapper();
         objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
         objectMapper.registerModule(new JaxbAnnotationModule());
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        
+        this.executorService = executorService;
     }
 
     @Override
@@ -88,8 +86,8 @@ public class GameDBClientImpl implements GamesDBClient {
 
     @Override
     public Future<GetGamesListResponse> searchGames(final Long id, final String query, final Platform platform) {
-        final FutureTask<GetGamesListResponse> futureTask;
-        futureTask = new FutureTask<>(new Callable<GetGamesListResponse>() {
+
+        return executorService.submit(new Callable<GetGamesListResponse>() {
             @Override
             public GetGamesListResponse call() throws Exception {
                 final RequestBuilder requestBuilder = RequestBuilder.get("http://thegamesdb.net/api/GetGamesList.php");
@@ -119,14 +117,12 @@ public class GameDBClientImpl implements GamesDBClient {
                 }
             }
         });
-        executor.execute(futureTask);
-        return futureTask;
     }
 
     @Override
+
     public Future<GetGameResponse> getGameById(final Long gameId) {
-        final FutureTask<GetGameResponse> futureTask;
-        futureTask = new FutureTask<>(new Callable<GetGameResponse>() {
+        return executorService.submit(new Callable<GetGameResponse>() {
             @Override
             public GetGameResponse call() throws Exception {
                 final HttpUriRequest request = RequestBuilder.get("http://thegamesdb.net/api/GetGame.php")
@@ -143,14 +139,12 @@ public class GameDBClientImpl implements GamesDBClient {
                 }
             }
         });
-        executor.execute(futureTask);
-        return futureTask;
     }
 
     @Override
     public Future<GetArtResponse> getGameArt(final Long gameId) {
-        final FutureTask<GetArtResponse> futureTask;
-        futureTask = new FutureTask<>(new Callable<GetArtResponse>() {
+
+        return executorService.submit(new Callable<GetArtResponse>() {
 
             @Override
             public GetArtResponse call() throws Exception {
@@ -170,15 +164,11 @@ public class GameDBClientImpl implements GamesDBClient {
                 }
             }
         });
-        executor.execute(futureTask);
-        return futureTask;
     }
 
     @Override
     public Future<GetPlatformsListResponse> getPlatformsList() {
-        final FutureTask<GetPlatformsListResponse> futureTask;
-        futureTask = new FutureTask<>(new Callable<GetPlatformsListResponse>() {
-
+        return executorService.submit(new Callable<GetPlatformsListResponse>() {
             @Override
             public GetPlatformsListResponse call() throws Exception {
                 final HttpUriRequest request = RequestBuilder
@@ -196,15 +186,12 @@ public class GameDBClientImpl implements GamesDBClient {
                 }
             }
         });
-        executor.execute(futureTask);
-        return futureTask;
     }
 
     @Override
     public Future<GetPlatformResponse> getPlatform(final Long platformId) {
-        final FutureTask<GetPlatformResponse> futureTask;
-        futureTask = new FutureTask<>(new Callable<GetPlatformResponse>() {
 
+        return executorService.submit(new Callable<GetPlatformResponse>() {
             @Override
             public GetPlatformResponse call() throws Exception {
                 final HttpUriRequest request = RequestBuilder.get("http://thegamesdb.net/api/GetPlatform.php")
@@ -213,24 +200,21 @@ public class GameDBClientImpl implements GamesDBClient {
 
                 try (final CloseableHttpResponse response = httpClient.execute(request)) {
                     final int statusCode = response.getStatusLine().getStatusCode();
-                    
-                    if(statusCode != HttpStatus.SC_OK){
+
+                    if (statusCode != HttpStatus.SC_OK) {
                         throw new RuntimeException(String.format("GetPlatform responded with %d status", statusCode));
                     }
-                    
+
                     return objectMapper.readValue(response.getEntity().getContent(), GetPlatformResponse.class);
                 }
             }
         });
-        executor.execute(futureTask);
-        return futureTask;
     }
 
     @Override
     public Future<GetPlatformGamesResponse> getPlatformGames(final Long platformId) {
-        final FutureTask<GetPlatformGamesResponse> futureTask;
-        
-        futureTask = new FutureTask<>(new Callable<GetPlatformGamesResponse>() {
+
+        return executorService.submit(new Callable<GetPlatformGamesResponse>() {
 
             @Override
             public GetPlatformGamesResponse call() throws Exception {
@@ -238,21 +222,18 @@ public class GameDBClientImpl implements GamesDBClient {
                         .get("http://thegamesdb.net/api/GetPlatformGames.php")
                         .addParameter("platform", platformId.toString())
                         .build();
-                
-                try(final CloseableHttpResponse response = httpClient.execute(request)){
+
+                try (final CloseableHttpResponse response = httpClient.execute(request)) {
                     final int statusCode = response.getStatusLine().getStatusCode();
-                    
-                    if(statusCode != HttpStatus.SC_OK){
+
+                    if (statusCode != HttpStatus.SC_OK) {
                         throw new RuntimeException(String.format("GetPlatformGames returned with %d status code.", statusCode));
                     }
-                    
+
                     return objectMapper.readValue(response.getEntity().getContent(), GetPlatformGamesResponse.class);
                 }
             }
         });
-        
-        executor.execute(futureTask);
-        return futureTask;
     }
 
 }
