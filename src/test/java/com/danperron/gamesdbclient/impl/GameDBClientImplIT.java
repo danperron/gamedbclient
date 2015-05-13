@@ -29,7 +29,7 @@ import com.danperron.gamedbclient.domain.GetGamesListResponse;
 import com.danperron.gamedbclient.domain.GetPlatformGamesResponse;
 import com.danperron.gamedbclient.domain.GetPlatformResponse;
 import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
-import com.danperron.gamesdbclient.GamesDBClient;
+import com.danperron.gamedbclient.domain.Platform;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,6 +51,8 @@ public class GameDBClientImplIT {
 
     /**
      * Test of searchGames method, of class GameDBClientImpl.
+     * @throws java.lang.InterruptedException
+     * @throws java.util.concurrent.ExecutionException
      */
     @org.junit.Test
     public void testSearchGames() throws InterruptedException, ExecutionException {
@@ -58,14 +60,14 @@ public class GameDBClientImplIT {
         String query = "bubblebobble";
         GameDBClientImpl instance = new GameDBClientImpl(executorService);
         Future<GetGamesListResponse> expResult = null;
-        Future<GetGamesListResponse> result = instance.searchGames(query, GamesDBClient.Platform.NES);
+        Future<GetGamesListResponse> result = instance.searchGames(query, Platform.NINTENDO_ENTERTAINMENT_SYSTEM_NES);
         GetGamesListResponse gamesListResponse = result.get();
         
         assertNotNull(gamesListResponse);
         assertEquals(7824, gamesListResponse.getGame().get(0).getId());
         assertEquals("Bubble Bobble", gamesListResponse.getGame().get(0).getGameTitle());
         assertEquals("01/01/1990", gamesListResponse.getGame().get(0).getReleaseDate());
-        assertEquals(GamesDBClient.Platform.NES.value(), gamesListResponse.getGame().get(0).getPlatform());
+        assertEquals(Platform.NINTENDO_ENTERTAINMENT_SYSTEM_NES.value(), gamesListResponse.getGame().get(0).getPlatform());
     }
 
     /**
@@ -83,7 +85,7 @@ public class GameDBClientImplIT {
         
         assertNotNull(getGameResponse);
         assertEquals("Bubble Bobble", getGameResponse.getGame().getGameTitle());
-        assertEquals(GamesDBClient.Platform.NES.value(), getGameResponse.getGame().getPlatform());
+        assertEquals(Platform.NINTENDO_ENTERTAINMENT_SYSTEM_NES.value(), getGameResponse.getGame().getPlatform());
     }
 
     /**

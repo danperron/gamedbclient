@@ -2,7 +2,9 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
     version="2.1">
-
+    <jxb:bindings>
+        <jxb:globalBindings typesafeEnumMaxMembers="500"/>
+    </jxb:bindings>
     <jxb:bindings schemaLocation="../xsd/GetGamesListResponse.xsd">
         <jxb:bindings node="//xs:element[@name='Data']">
             <jxb:class name="GetGamesListResponse"/>
@@ -31,6 +33,13 @@
     <jxb:bindings schemaLocation="../xsd/GetPlatformGamesResponse.xsd">
         <jxb:bindings node="//xs:element[@name='Data']">
             <jxb:class name="GetPlatformGamesResponse"/>
+        </jxb:bindings>
+    </jxb:bindings>
+        <jxb:bindings schemaLocation="../xsd/Platform.xsd">
+        <jxb:bindings node="//xs:simpleType[@name='Platform']">
+            <jxb:bindings node="//xs:enumeration[@value='3DO']">
+                <jxb:typesafeEnumMember name="THREE_DEE_OH"/>
+            </jxb:bindings>
         </jxb:bindings>
     </jxb:bindings>
 </jxb:bindings>

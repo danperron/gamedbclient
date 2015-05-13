@@ -25,15 +25,56 @@ THE SOFTWARE.
 
 <xs:schema version="1.0"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://danperron.com/gamesdbclient/domain/game"
            elementFormDefault="qualified">
-    <xs:element name="Platform">
-        <xs:simpleType>
-            <xs:restriction base="xs:string">
-                <xs:enumeration value="Nintendo Entertainment System (NES)"/>
-                <xs:enumeration value="Sega Genesis"/>
-                <xs:enumeration value="Sony Playstation"/>
-                <xs:enumeration value="Arcade"/>
-            </xs:restriction>
-        </xs:simpleType>
-    </xs:element>
+    
+    <xs:simpleType name="Platform">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="3DO"/>
+            <xs:enumeration value="Amiga"/>
+            <xs:enumeration value="Amstrad CPC"/>
+            <xs:enumeration value="Arcade"/>
+            <xs:enumeration value="Atari 2600"/>
+            <xs:enumeration value="Atari 5200"/>
+            <xs:enumeration value="Atari 7800"/>
+            <xs:enumeration value="Atari Jaguar"/>
+            <xs:enumeration value="Atari Jaguar CD"/>
+            <xs:enumeration value="Atari XE"/>
+            <xs:enumeration value="Colecovision"/>
+            <xs:enumeration value="Commodore 64"/>
+            <xs:enumeration value="Intellivision"/>
+            <xs:enumeration value="Mac OS"/>
+            <xs:enumeration value="Microsoft Xbox"/>
+            <xs:enumeration value="Microsoft Xbox 360"/>
+            <xs:enumeration value="NeoGeo"/>
+            <xs:enumeration value="Nintendo 3DS"/>
+            <xs:enumeration value="Nintendo 64"/>
+            <xs:enumeration value="Nintendo DS"/>
+            <xs:enumeration value="Nintendo Entertainment System (NES)"/>
+            <xs:enumeration value="Nintendo Game Boy"/>
+            <xs:enumeration value="Nintendo Game Boy Advance"/>
+            <xs:enumeration value="Nintendo Game Boy Color"/>
+            <xs:enumeration value="Nintendo GameCube"/>
+            <xs:enumeration value="Nintendo Wii"/>
+            <xs:enumeration value="Nintendo Wii U"/>
+            <xs:enumeration value="PC"/>
+            <xs:enumeration value="Sega 32X"/>
+            <xs:enumeration value="Sega CD"/>
+            <xs:enumeration value="Sega Dreamcast"/>
+            <xs:enumeration value="Sega Game Gear"/>
+            <xs:enumeration value="Sega Genesis"/>
+            <xs:enumeration value="Sega Master System"/>
+            <xs:enumeration value="Sega Mega Drive"/>
+            <xs:enumeration value="Sega Saturn"/>
+            <xs:enumeration value="Sinclair ZX Spectrum"/>
+            <xs:enumeration value="Sony Playstation"/>
+            <xs:enumeration value="Sony Playstation 2"/>
+            <xs:enumeration value="Sony Playstation 3"/>
+            <xs:enumeration value="Sony Playstation Vita"/>
+            <xs:enumeration value="Sony PSP"/>
+            <xs:enumeration value="Super Nintendo (SNES)"/>
+            <xs:enumeration value="TurboGrafx 16"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
 </xs:schema>

@@ -29,18 +29,15 @@ import com.danperron.gamedbclient.domain.GetGamesListResponse;
 import com.danperron.gamedbclient.domain.GetPlatformGamesResponse;
 import com.danperron.gamedbclient.domain.GetPlatformResponse;
 import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
+import com.danperron.gamedbclient.domain.Platform;
 import com.danperron.gamesdbclient.GamesDBClient;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.base.Strings;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -55,46 +52,31 @@ import org.apache.http.impl.client.HttpClients;
  */
 public class GameDBClientImpl implements GamesDBClient {
 
-    private final Executor executor = Executors.newCachedThreadPool();
     private final ExecutorService executorService;
     private final CloseableHttpClient httpClient = HttpClients.createDefault();
-    private final ObjectMapper objectMapper;
+    private final XmlMapper xmlMapper;
 
     public GameDBClientImpl(ExecutorService executorService) {
-        objectMapper = new XmlMapper();
-        objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        objectMapper.registerModule(new JaxbAnnotationModule());
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        xmlMapper = new XmlMapper();
+        xmlMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        xmlMapper.registerModule(new JaxbAnnotationModule());
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
         this.executorService = executorService;
     }
 
     @Override
     public Future<GetGamesListResponse> searchGames(final String query) {
-        return searchGames(null, query, null);
-    }
-
-    @Override
-    public Future<GetGamesListResponse> searchGames(final Long id, final String query) {
-        return searchGames(id, query, null);
+        return searchGames(query, null);
     }
 
     @Override
     public Future<GetGamesListResponse> searchGames(final String query, final Platform platform) {
-        return searchGames(null, query, platform);
-    }
-
-    @Override
-    public Future<GetGamesListResponse> searchGames(final Long id, final String query, final Platform platform) {
 
         return executorService.submit(new Callable<GetGamesListResponse>() {
             @Override
             public GetGamesListResponse call() throws Exception {
                 final RequestBuilder requestBuilder = RequestBuilder.get("http://thegamesdb.net/api/GetGamesList.php");
-
-                if (id != null) {
-                    requestBuilder.addParameter("id", String.valueOf(id));
-                }
 
                 if (!Strings.isNullOrEmpty(query)) {
                     requestBuilder.addParameter("name", query);
@@ -113,7 +95,7 @@ public class GameDBClientImpl implements GamesDBClient {
                         throw new RuntimeException(String.format("GetGamesList responded with %d status.", statusCode));
                     }
 
-                    return objectMapper.readValue(response.getEntity().getContent(), GetGamesListResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetGamesListResponse.class);
                 }
             }
         });
@@ -135,7 +117,7 @@ public class GameDBClientImpl implements GamesDBClient {
                     if (statusCode != HttpStatus.SC_OK) {
                         throw new RuntimeException(String.format("GetGame returned with %d status.", statusCode));
                     }
-                    return objectMapper.readValue(response.getEntity().getContent(), GetGameResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetGameResponse.class);
                 }
             }
         });
@@ -160,7 +142,7 @@ public class GameDBClientImpl implements GamesDBClient {
                         throw new RuntimeException(String.format("GetArt responded with %d status.", statusCode));
                     }
 
-                    return objectMapper.readValue(response.getEntity().getContent(), GetArtResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetArtResponse.class);
                 }
             }
         });
@@ -182,7 +164,7 @@ public class GameDBClientImpl implements GamesDBClient {
                         throw new RuntimeException(String.format("GetPlatformsList responded with %d status", statusCode));
                     }
 
-                    return objectMapper.readValue(response.getEntity().getContent(), GetPlatformsListResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformsListResponse.class);
                 }
             }
         });
@@ -205,7 +187,7 @@ public class GameDBClientImpl implements GamesDBClient {
                         throw new RuntimeException(String.format("GetPlatform responded with %d status", statusCode));
                     }
 
-                    return objectMapper.readValue(response.getEntity().getContent(), GetPlatformResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformResponse.class);
                 }
             }
         });
@@ -230,7 +212,7 @@ public class GameDBClientImpl implements GamesDBClient {
                         throw new RuntimeException(String.format("GetPlatformGames returned with %d status code.", statusCode));
                     }
 
-                    return objectMapper.readValue(response.getEntity().getContent(), GetPlatformGamesResponse.class);
+                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformGamesResponse.class);
                 }
             }
         });

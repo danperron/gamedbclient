@@ -37,6 +37,7 @@ public class GamesDBClientFactory {
     /**
      * return an implementation of {@link GamesDBClient}
      * 
+     * @param executorService
      * @return 
      */
     public static GamesDBClient getClient(final ExecutorService executorService){

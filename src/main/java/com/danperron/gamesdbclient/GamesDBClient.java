@@ -29,53 +29,84 @@ import com.danperron.gamedbclient.domain.GetGamesListResponse;
 import com.danperron.gamedbclient.domain.GetPlatformGamesResponse;
 import com.danperron.gamedbclient.domain.GetPlatformResponse;
 import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
+import com.danperron.gamedbclient.domain.Platform;
 import java.util.concurrent.Future;
 
 /**
  *
+ * Client for making calls to <b>thegamesdb.net</b> api.
+ * 
+ * @see http://wiki.thegamesdb.net/index.php/API_Introduction
+ * 
  * @author Dan Perron <danp3rr0n@gmail.com>
  */
 public interface GamesDBClient {
 
+    /**
+     * Search for a game with a string query.
+     * 
+     * @param query Name of the game to search for.
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetGamesList
+     * @return 
+     */
     Future<GetGamesListResponse> searchGames(String query);
-    Future<GetGamesListResponse> searchGames(Long id, String query);
-    Future<GetGamesListResponse> searchGames(String query, Platform platform);
-    Future<GetGamesListResponse> searchGames(Long id, String query, Platform platform);
 
+    /**
+     * Search for a game by name and {@link Platform}
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetGamesList
+     * 
+     * @param query
+     * @param platform
+     * @return 
+     */
+    Future<GetGamesListResponse> searchGames(String query, Platform platform);
+
+    /**
+     * Get information about a game by id.
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetGame
+     * 
+     * @param gameId
+     * @return 
+     */
     Future<GetGameResponse> getGameById(Long gameId);
 
+    /**
+     * Get Game art by game id.
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetArt
+     * 
+     * @param gameId The id of the game to return art for.
+     * @return 
+     */
     Future<GetArtResponse> getGameArt(Long gameId);
 
+    /**
+     * Get a list of game platforms.
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetPlatformsList
+     * 
+     * @return 
+     */
     Future<GetPlatformsListResponse> getPlatformsList();
 
+    /**
+     * Get information about a game platform.
+     * 
+     * @see http://wiki.thegamesdb.net/index.php/GetPlatform
+     * 
+     * @param platformId the platform id to get information for.
+     * @return 
+     */
     Future<GetPlatformResponse> getPlatform(Long platformId);
 
+    /**
+     * Get a list of game for a platform.
+     * 
+     * @param platformId the platform to list games for.
+     * @return 
+     */
     Future<GetPlatformGamesResponse> getPlatformGames(Long platformId);
-
-    public enum Platform {
-
-        NES("Nintendo Entertainment System (NES)"),
-        SNES("Super Nintendo (SNES)"),
-        WII("Nintendo Wii"),
-        GAMECUBE("Nintendo GameCube"),
-        GBA("Nintendo Game Boy Advance"),
-        PSP("Sony PSP"),
-        PSX("Sony Playstation"),
-        PS2("Sony Playstation 2"),
-        PS3("Sony Playstation 3"),
-        PS4("Sony Playstation 4"),
-        SEGA_GENESIS("Sega Genesis"),
-        ARCADE("Arcade");
-
-        private final String name;
-
-        private Platform(String name) {
-            this.name = name;
-        }
-        
-        public String value(){
-            return name;
-        }
-    }
-
 }
