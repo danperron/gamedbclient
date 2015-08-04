@@ -23,7 +23,7 @@
  */
 package com.danperron.gamesdbclient;
 
-import com.danperron.gamesdbclient.impl.GameDBClientImpl;
+import com.danperron.gamesdbclient.impl.GamesDBClientImpl;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -41,7 +41,7 @@ public class GamesDBClientFactory {
      * @return 
      */
     public static GamesDBClient getClient(final ExecutorService executorService){
-        return new GameDBClientImpl(executorService);
+        return new GamesDBClientImpl(executorService);
     }
     
     

@@ -52,13 +52,13 @@ import org.apache.http.impl.client.HttpClients;
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
  */
-public class GameDBClientImpl implements GamesDBClient {
+public class GamesDBClientImpl implements GamesDBClient {
 
     private final ExecutorService executorService;
     private final CloseableHttpClient httpClient = HttpClients.createDefault();
     private final XmlMapper xmlMapper;
 
-    public GameDBClientImpl(ExecutorService executorService) {
+    public GamesDBClientImpl(ExecutorService executorService) {
         xmlMapper = new XmlMapper();
         xmlMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
         xmlMapper.registerModule(new JaxbAnnotationModule());
