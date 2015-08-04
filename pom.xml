@@ -45,28 +45,5 @@
         </dependency>
     </dependencies>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.12.3</version>
-                <configuration>
-                    <schemaDirectory>src/main/xsd</schemaDirectory>
-                    <generatePackage>com.danperron.gamedbclient.domain</generatePackage>
-                    <bindingDirectory>src/main/xjb</bindingDirectory>
-                    <bindingIncludes>
-                        <include>**/*.xjb</include>
-                    </bindingIncludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 </project>

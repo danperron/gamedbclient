@@ -23,13 +23,13 @@
  */
 package com.danperron.gamesdbclient;
 
-import com.danperron.gamedbclient.domain.GetArtResponse;
-import com.danperron.gamedbclient.domain.GetGameResponse;
-import com.danperron.gamedbclient.domain.GetGamesListResponse;
-import com.danperron.gamedbclient.domain.GetPlatformGamesResponse;
-import com.danperron.gamedbclient.domain.GetPlatformResponse;
-import com.danperron.gamedbclient.domain.GetPlatformsListResponse;
-import com.danperron.gamedbclient.domain.Platform;
+import com.danperron.gamesdbclient.domain.GetArtResponse;
+import com.danperron.gamesdbclient.domain.GetGameResponse;
+import com.danperron.gamesdbclient.domain.GetGamesListResponse;
+import com.danperron.gamesdbclient.domain.GetPlatformGamesResponse;
+import com.danperron.gamesdbclient.domain.GetPlatformResponse;
+import com.danperron.gamesdbclient.domain.GetPlatformsListResponse;
+import com.danperron.gamesdbclient.domain.Platform;
 import java.util.concurrent.Future;
 
 /**
