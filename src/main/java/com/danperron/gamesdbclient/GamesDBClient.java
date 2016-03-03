@@ -30,6 +30,7 @@ import com.danperron.gamesdbclient.domain.GetPlatformGamesResponse;
 import com.danperron.gamesdbclient.domain.GetPlatformResponse;
 import com.danperron.gamesdbclient.domain.GetPlatformsListResponse;
 import com.danperron.gamesdbclient.domain.Platform;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
@@ -50,7 +51,7 @@ public interface GamesDBClient {
      * @see http://wiki.thegamesdb.net/index.php/GetGamesList
      * @return 
      */
-    Future<GetGamesListResponse> searchGames(String query);
+    CompletableFuture<GetGamesListResponse> searchGames(String query);
 
     /**
      * Search for a game by name and {@link Platform}
@@ -61,7 +62,7 @@ public interface GamesDBClient {
      * @param platform
      * @return 
      */
-    Future<GetGamesListResponse> searchGames(String query, Platform platform);
+    CompletableFuture<GetGamesListResponse> searchGames(String query, Platform platform);
 
     /**
      * Get information about a game by id.
@@ -71,7 +72,7 @@ public interface GamesDBClient {
      * @param gameId
      * @return 
      */
-    Future<GetGameResponse> getGameById(Long gameId);
+    CompletableFuture<GetGameResponse> getGameById(Long gameId);
 
     /**
      * Get Game art by game id.
@@ -81,7 +82,7 @@ public interface GamesDBClient {
      * @param gameId The id of the game to return art for.
      * @return 
      */
-    Future<GetArtResponse> getGameArt(Long gameId);
+    CompletableFuture<GetArtResponse> getGameArt(Long gameId);
 
     /**
      * Get a list of game platforms.
@@ -90,7 +91,7 @@ public interface GamesDBClient {
      * 
      * @return 
      */
-    Future<GetPlatformsListResponse> getPlatformsList();
+    CompletableFuture<GetPlatformsListResponse> getPlatformsList();
 
     /**
      * Get information about a game platform.
@@ -100,7 +101,7 @@ public interface GamesDBClient {
      * @param platformId the platform id to get information for.
      * @return 
      */
-    Future<GetPlatformResponse> getPlatform(Long platformId);
+    CompletableFuture<GetPlatformResponse> getPlatform(Long platformId);
 
     /**
      * Get a list of game for a platform.
@@ -108,5 +109,5 @@ public interface GamesDBClient {
      * @param platformId the platform to list games for.
      * @return 
      */
-    Future<GetPlatformGamesResponse> getPlatformGames(Long platformId);
+    CompletableFuture<GetPlatformGamesResponse> getPlatformGames(Long platformId);
 }

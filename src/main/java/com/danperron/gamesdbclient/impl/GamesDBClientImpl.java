@@ -38,9 +38,8 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.base.Strings;
 import java.io.IOException;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -63,21 +62,23 @@ public class GamesDBClientImpl implements GamesDBClient {
         xmlMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
         xmlMapper.registerModule(new JaxbAnnotationModule());
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
+
         this.executorService = executorService;
     }
 
     @Override
-    public Future<GetGamesListResponse> searchGames(final String query) {
+    public CompletableFuture<GetGamesListResponse> searchGames(final String query) {
         return searchGames(query, null);
     }
 
     @Override
-    public Future<GetGamesListResponse> searchGames(final String query, final Platform platform) {
+    public CompletableFuture<GetGamesListResponse> searchGames(final String query, final Platform platform) {
 
-        return executorService.submit(new Callable<GetGamesListResponse>() {
+        final CompletableFuture<GetGamesListResponse> result = new CompletableFuture<>();
+
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetGamesListResponse call() throws GamesDBClientException {
+            public void run() {
                 final RequestBuilder requestBuilder = RequestBuilder.get("http://thegamesdb.net/api/GetGamesList.php");
 
                 if (!Strings.isNullOrEmpty(query)) {
@@ -95,21 +96,26 @@ public class GamesDBClientImpl implements GamesDBClient {
 
                     if (statusCode != HttpStatus.SC_OK) {
                         throw new GamesDBClientException(String.format("GetGamesList responded with %d status.", statusCode));
-                    } 
-
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetGamesListResponse.class);
+                    }
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetGamesListResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Error while attempting to search.", ex);
+                    result.completeExceptionally(new GamesDBClientException("Error while attempting to search.", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+        return result;
     }
 
     @Override
-    public Future<GetGameResponse> getGameById(final Long gameId) {
-        return executorService.submit(new Callable<GetGameResponse>() {
+    public CompletableFuture<GetGameResponse> getGameById(final Long gameId) {
+
+        final CompletableFuture<GetGameResponse> result = new CompletableFuture<>();
+
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetGameResponse call() throws GamesDBClientException {
+            public void run() {
                 final HttpUriRequest request = RequestBuilder.get("http://thegamesdb.net/api/GetGame.php")
                         .addParameter("id", gameId.toString())
                         .build();
@@ -120,21 +126,26 @@ public class GamesDBClientImpl implements GamesDBClient {
                     if (statusCode != HttpStatus.SC_OK) {
                         throw new GamesDBClientException(String.format("GetGame returned with %d status.", statusCode));
                     }
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetGameResponse.class);
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetGameResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Error attempting to get game by Id.", ex);
+                    result.completeExceptionally(new GamesDBClientException("Error attempting to get game by Id.", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+
+        return result;
+
     }
 
     @Override
-    public Future<GetArtResponse> getGameArt(final Long gameId) {
+    public CompletableFuture<GetArtResponse> getGameArt(final Long gameId) {
 
-        return executorService.submit(new Callable<GetArtResponse>() {
-
+        final CompletableFuture<GetArtResponse> result = new CompletableFuture<>();
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetArtResponse call() throws GamesDBClientException {
+            public void run() {
                 final HttpUriRequest request = RequestBuilder
                         .get("http://thegamesdb.net/api/GetArt.php")
                         .addParameter("id", gameId.toString())
@@ -147,19 +158,23 @@ public class GamesDBClientImpl implements GamesDBClient {
                         throw new GamesDBClientException(String.format("GetArt responded with %d status.", statusCode));
                     }
 
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetArtResponse.class);
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetArtResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Unable to get Game Art", ex);
+                    result.completeExceptionally(new GamesDBClientException("Unable to get Game Art", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+        return result;
     }
 
     @Override
-    public Future<GetPlatformsListResponse> getPlatformsList() {
-        return executorService.submit(new Callable<GetPlatformsListResponse>() {
+    public CompletableFuture<GetPlatformsListResponse> getPlatformsList() {
+        final CompletableFuture<GetPlatformsListResponse> result = new CompletableFuture<>();
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetPlatformsListResponse call() throws GamesDBClientException {
+            public void run() {
                 final HttpUriRequest request = RequestBuilder
                         .get("http://thegamesdb.net/api/GetPlatformsList.php")
                         .build();
@@ -171,20 +186,25 @@ public class GamesDBClientImpl implements GamesDBClient {
                         throw new GamesDBClientException(String.format("GetPlatformsList responded with %d status", statusCode));
                     }
 
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformsListResponse.class);
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetPlatformsListResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Unable to get platform list.", ex);
+                    result.completeExceptionally(new GamesDBClientException("Unable to get platform list.", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+        return result;
+
     }
 
     @Override
-    public Future<GetPlatformResponse> getPlatform(final Long platformId) {
+    public CompletableFuture<GetPlatformResponse> getPlatform(final Long platformId) {
 
-        return executorService.submit(new Callable<GetPlatformResponse>() {
+        final CompletableFuture<GetPlatformResponse> result = new CompletableFuture<>();
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetPlatformResponse call() throws GamesDBClientException {
+            public void run() {
                 final HttpUriRequest request = RequestBuilder.get("http://thegamesdb.net/api/GetPlatform.php")
                         .addParameter("id", platformId.toString())
                         .build();
@@ -196,21 +216,25 @@ public class GamesDBClientImpl implements GamesDBClient {
                         throw new GamesDBClientException(String.format("GetPlatform responded with %d status", statusCode));
                     }
 
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformResponse.class);
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetPlatformResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Unable to get platform.", ex);
+                    result.completeExceptionally(new GamesDBClientException("Unable to get platform.", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+        return result;
+
     }
 
     @Override
-    public Future<GetPlatformGamesResponse> getPlatformGames(final Long platformId) {
+    public CompletableFuture<GetPlatformGamesResponse> getPlatformGames(final Long platformId) {
 
-        return executorService.submit(new Callable<GetPlatformGamesResponse>() {
-
+        final CompletableFuture<GetPlatformGamesResponse> result = new CompletableFuture<>();
+        CompletableFuture.runAsync(new Runnable() {
             @Override
-            public GetPlatformGamesResponse call() throws GamesDBClientException {
+            public void run() {
                 final HttpUriRequest request = RequestBuilder
                         .get("http://thegamesdb.net/api/GetPlatformGames.php")
                         .addParameter("platform", platformId.toString())
@@ -222,13 +246,15 @@ public class GamesDBClientImpl implements GamesDBClient {
                     if (statusCode != HttpStatus.SC_OK) {
                         throw new GamesDBClientException(String.format("GetPlatformGames returned with %d status code.", statusCode));
                     }
-
-                    return xmlMapper.readValue(response.getEntity().getContent(), GetPlatformGamesResponse.class);
+                    result.complete(xmlMapper.readValue(response.getEntity().getContent(), GetPlatformGamesResponse.class));
                 } catch (IOException ex) {
-                    throw new GamesDBClientException("Unable to get games by platform.", ex);
+                    result.completeExceptionally(new GamesDBClientException("Unable to get games by platform.", ex));
+                } catch (GamesDBClientException ex) {
+                    result.completeExceptionally(ex);
                 }
             }
-        });
+        }, executorService);
+        return result;
     }
 
 }
